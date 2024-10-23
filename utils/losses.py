@@ -185,7 +185,7 @@ def total_variation_loss(image):
     return tv_loss
 
 
-def GDNLoss(generated_HR, true_LR, estimated_blur_kernel, lambda_tv, alpha_blur):
+def GDNLoss(generated_HR, true_LR, estimated_blur_kernel, lambda_tv):
     """
     Combined loss that includes blur kernel estimation and total variation loss.
     """
@@ -198,7 +198,7 @@ def GDNLoss(generated_HR, true_LR, estimated_blur_kernel, lambda_tv, alpha_blur)
     print(f"Total Variation Loss: {tv_loss}")
 
     # Combined loss
-    total_loss = alpha_blur * loss_blur + lambda_tv * tv_loss
+    total_loss = loss_blur + lambda_tv * tv_loss
     print(f"Combined GDN Loss: {total_loss.item()}")
 
     return total_loss
