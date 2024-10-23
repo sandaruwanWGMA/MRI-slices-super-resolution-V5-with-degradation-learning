@@ -15,21 +15,15 @@ class DegradationNetwork(nn.Module):
         self.fwhm = fwhm
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.low_pass_filter = self.create_sinc_gaussian_filter()
-        print(f"Low-pass filter shape: {self.low_pass_filter.shape}")  # Debug
 
     def forward(self, x, angle, translation):
-        print(f"Input shape: {x.shape}")  # Debug
         transformed_img_tensor = self.apply_rigid_transform(x, angle, translation)
-        print(f"Transformed image shape: {transformed_img_tensor.shape}")  # Debug
 
         freq_domain = torch.fft.fftshift(torch.fft.fft2(transformed_img_tensor))
-        print(f"Frequency domain shape: {freq_domain.shape}")  # Debug
 
         filtered_freq = freq_domain * self.low_pass_filter
-        print(f"Filtered frequency shape: {filtered_freq.shape}")  # Debug
 
         degraded_image = torch.fft.ifft2(torch.fft.ifftshift(filtered_freq)).real
-        print(f"Degraded image shape: {degraded_image.shape}")  # Debug
         return degraded_image
 
     def create_sinc_gaussian_filter(self):
@@ -51,9 +45,6 @@ class DegradationNetwork(nn.Module):
         if not torch.is_tensor(image):
             image = TF.to_tensor(image)
         image = image.unsqueeze(0)  # Adding batch dimension for processing
-        print(
-            f"Image tensor shape after adding batch dimension: {image.shape}"
-        )  # Debug
 
         angle_rad = torch.tensor(angle * (math.pi / 180), device=self.device)
         cos_a, sin_a = torch.cos(angle_rad), torch.sin(angle_rad)
@@ -69,16 +60,11 @@ class DegradationNetwork(nn.Module):
             device=self.device,
         )
 
-        print(f"Affine matrix: {affine_matrix}")  # Debug
-
         # Create affine grid and apply the affine transformation using torch.nn.functional
         grid = F.affine_grid(
             affine_matrix.unsqueeze(0), image.size(), align_corners=False
         )  # Note the unsqueeze to add batch dimension
         transformed_image = F.grid_sample(image, grid, align_corners=False)
-        print(
-            f"Transformed image shape after grid_sample: {transformed_image.shape}"
-        )  # Debug
 
         return transformed_image.squeeze(
             0
