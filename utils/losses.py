@@ -173,14 +173,12 @@ def total_variation_loss(image):
     # Assuming image of shape [1, height, width]
     if len(image.shape) == 3:
         image = image.unsqueeze(0)
-    print(f"Image shape after adding batch dimension (if needed): {image.shape}")
 
     # Calculate TV loss
     tv_loss_x = torch.sum(torch.abs(image[:, :, :, :-1] - image[:, :, :, 1:]))
     tv_loss_y = torch.sum(torch.abs(image[:, :, :-1, :] - image[:, :, 1:, :]))
 
     tv_loss = tv_loss_x + tv_loss_y
-    print(f"Total Variation Loss: {tv_loss.item()}")
 
     return tv_loss
 
@@ -191,14 +189,11 @@ def GDNLoss(generated_HR, true_LR, estimated_blur_kernel, lambda_tv, alpha_blur)
     """
     # Blur Kernel Estimation loss
     loss_blur = F.mse_loss(true_LR, estimated_blur_kernel)
-    print(f"Blur Kernel Estimation Loss: {loss_blur.item()}")
 
     # Total Variation Loss for edge preservation in HR reconstruction
     tv_loss = total_variation_loss(generated_HR)
-    print(f"Total Variation Loss: {tv_loss}")
 
     # Combined loss
     total_loss = alpha_blur * loss_blur + lambda_tv * tv_loss
-    print(f"Combined GDN Loss: {total_loss.item()}")
 
     return total_loss
