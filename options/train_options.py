@@ -24,7 +24,7 @@ class TrainOptions:
         self.parser.add_argument(
             "--num_workers",
             type=int,
-            default=4,
+            default=8,
             help="Number of subprocesses to use for data loading",
         )
         self.parser.add_argument(
@@ -34,7 +34,7 @@ class TrainOptions:
             help="Type of model to train: e.g., 'sr_unet', 'multi_gdn', 'vgg_patch_gan'",
         )
         self.parser.add_argument(
-            "--batch_size", type=int, default=8, help="Batch size for training"
+            "--batch_size", type=int, default=32, help="Batch size for training"
         )
         self.parser.add_argument(
             "--epoch_count",
@@ -92,7 +92,7 @@ class TrainOptions:
         self.parser.add_argument(
             "--gpu_ids",
             type=str,
-            default="0",
+            default="0,1,2,3",
             help="Comma-separated GPU IDs (e.g., '0,1,2') for training; '-1' for CPU",
         )
         self.parser.add_argument(
@@ -204,6 +204,56 @@ class TrainOptions:
             help="Freeze the classifier of the CustomDeepLab model",
         )
 
+        # Model specific hyperparameters
+        self.parser.add_argument(
+            "--lambda_tv",
+            type=float,
+            default=0.5,
+            help="Weight for the total variation loss component",
+        )
+        self.parser.add_argument(
+            "--alpha_blur",
+            type=float,
+            default=0.75,
+            help="Weight for the blur component in loss calculation",
+        )
+        self.parser.add_argument(
+            "--angle",
+            type=float,
+            default=30.0,
+            help="Angle in degrees for image rotation during training",
+        )
+        self.parser.add_argument(
+            "--translation_x",
+            type=int,
+            default=10,
+            help="Translation along the X-axis in pixels",
+        )
+        self.parser.add_argument(
+            "--translation_y",
+            type=int,
+            default=5,
+            help="Translation along the Y-axis in pixels",
+        )
+        self.parser.add_argument(
+            "--weight_sr",
+            type=float,
+            default=0.85,
+            help="Weight for the super-resolution component of the loss",
+        )
+        self.parser.add_argument(
+            "--weight_disc",
+            type=float,
+            default=0.75,
+            help="Weight for the discriminator component of the loss",
+        )
+        self.parser.add_argument(
+            "--weight_gdn",
+            type=float,
+            default=0.0001,
+            help="Weight for the gradient density network component of the loss",
+        )
+
         self.initialized = True
 
     def parse(self):
@@ -211,12 +261,12 @@ class TrainOptions:
             self.initialize()
         opt = self.parser.parse_args()
 
-        # Determine the device to use based on --gpu_ids
+        # Set device based on GPU availability and --gpu_ids
         str_ids = opt.gpu_ids.split(",")
-        opt.gpu_ids = [int(id) for id in str_ids if int(id) >= 0]  # Filter out -1 (CPU)
+        opt.gpu_ids = [int(id) for id in str_ids if int(id) >= 0]
         if len(opt.gpu_ids) > 0 and torch.cuda.is_available():
             opt.device = torch.device(f"cuda:{opt.gpu_ids[0]}")
-            torch.cuda.set_device(opt.gpu_ids[0])  # Set the first GPU as the default
+            torch.cuda.set_device(opt.device)  # Set the first GPU as the default
         else:
             opt.device = torch.device("cpu")
 
@@ -226,11 +276,6 @@ class TrainOptions:
     def print_options(self, opt):
         message = "----------------- Options ---------------\n"
         for k, v in sorted(vars(opt).items()):
-            # Convert opt.device to a string if it's a torch.device object
-            if isinstance(v, torch.device):
-                v = str(v)
-            if isinstance(v, list):  # Convert list to string to avoid formatting errors
-                v = ", ".join(map(str, v))
             default = self.parser.get_default(k)
             comment = f"\t[default: {default}]" if v != default else ""
             message += f"{k:>25}: {v:<30}{comment}\n"

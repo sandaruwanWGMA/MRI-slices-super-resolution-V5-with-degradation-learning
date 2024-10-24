@@ -31,7 +31,12 @@ def main():
     train_dataset = MRIDataset(base_dir=base_dir, transform=None)
 
     # Create the data loaders
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=opt.batch_size,
+        shuffle=True,
+        num_workers=opt.num_workers,
+    )
 
     # dataset = create_dataset(opt)
     # dataloader = DataLoader(
@@ -77,20 +82,17 @@ def main():
                 for slice_index in range(num_slices):
                     lr_slice, hr_slice = model.get_slice_pair(slice_index)
 
-                    angle = 30  # degrees
-                    translation = (10, 5)  # x and y translation in pixels
-
                     # Forward, backward pass, and optimize with additional parameters
                     model.optimize_parameters(
                         lr_images=lr_slice,
                         hr_images=hr_slice,
-                        lambda_tv=0.5,
-                        alpha_blur=0.75,
-                        angle=angle,
-                        translation=translation,
-                        weight_sr=0.85,
-                        weight_disc=0.75,
-                        weight_gdn=0.0001,
+                        lambda_tv=opt.lambda_tv,
+                        alpha_blur=opt.alpha_blur,
+                        angle=opt.angle,
+                        translation=(opt.translation_x, opt.translation_y),
+                        weight_sr=opt.weight_sr,
+                        weight_disc=opt.weight_disc,
+                        weight_gdn=opt.weight_gdn,
                     )
 
                     # Print loss information at the specified frequency
