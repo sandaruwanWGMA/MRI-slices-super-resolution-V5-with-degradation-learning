@@ -151,7 +151,7 @@ class TrainOptions:
         )
         self.parser.add_argument(
             "--unfreeze_layers",
-            nargs="+",
+            type=int,
             default=["blocks.3", "blocks.4", "blocks.5", "blocks.6"],
             help="Unfreezed layers for SRUNet",
         )
