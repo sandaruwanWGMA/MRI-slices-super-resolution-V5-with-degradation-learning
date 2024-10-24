@@ -18,26 +18,28 @@ def main():
     # Parse options
     opt = TrainOptions().parse()
 
-    print(f"Loading checkpoint on device: {opt.device}")
+    visualizer = Visualizer(opt)
+    unique_values = 8000
+    losses_dict_arr = {
+        "sr_loss_arr": [x * 0.1 for x in range(unique_values)],
+        "gdn_loss_arr": [x * 0.2 for x in range(unique_values)],
+        "gan_loss_arr": [x * 0.3 for x in range(unique_values)],
+    }
 
-    # Create a model based on the options
-    model = create_model(opt)
+    # Determine the number of unique values in each loss array
+    unique_counts = {k: len(set(v)) for k, v in losses_dict_arr.items()}
+    max_unique_count = max(
+        unique_counts.values()
+    )  # Find the maximum number of unique values
 
-    # Base directory
-    base_dir = "mri_coupled_dataset"
+    # Calculate total_iters based on the max number of unique values and batch size
+    total_iters = list(range(0, max_unique_count * opt.batch_size, opt.batch_size))
 
-    # Initialize the datasets
-    train_dataset = MRIDataset(base_dir=base_dir, transform=None)
-
-    # Create the data loaders
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=opt.batch_size,
-        shuffle=True,
-        num_workers=opt.num_workers,
+    visualizer.plot_and_save_losses(
+        output_path=opt.plots_out_dir,
+        total_iters=total_iters,
+        losses_dict_arr=losses_dict_arr,
     )
-
-    print("We are good !!")
 
 
 if __name__ == "__main__":

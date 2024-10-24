@@ -19,6 +19,45 @@ class Visualizer:
         plt.ion()  # Turn on interactive mode
         self.plots = {}
 
+    def plot_and_save_losses(self, output_path, total_iters, losses_dict_arr):
+        """
+        Plot each type of loss against the total iterations and save the plots to the specified directory.
+
+        Args:
+            output_path (str): The directory path where the plots will be saved.
+            total_iters (list): An array of iteration numbers.
+            losses_dict_arr (dict): A dictionary where each key is a loss name and each value is an array of loss values.
+        """
+        # Ensure the output directory exists
+        os.makedirs(output_path, exist_ok=True)
+
+        # Figure size adjustment for clarity
+        plt.figure(figsize=(12, 6))  # Wider plot to better distribute data points
+
+        # Iterate through each loss array in the dictionary
+        for loss_name, loss_values in losses_dict_arr.items():
+            plt.plot(total_iters, loss_values, label=loss_name)
+            plt.xlabel("Iteration Number")
+            plt.ylabel("Loss Value")
+            plt.title(f"{loss_name} Loss Over Iterations")
+            plt.legend()
+            plt.grid(True)
+
+            # Managing tick density
+            plt.xticks(rotation=45)  # Rotate x-axis labels to avoid overlap
+            plt.gca().xaxis.set_major_locator(
+                plt.MaxNLocator(20)
+            )  # Limit number of x-axis ticks
+
+            # Save the plot to the specified output directory
+            file_path = os.path.join(output_path, f"{loss_name}.png")
+            plt.savefig(
+                file_path, bbox_inches="tight"
+            )  # Ensure no clipping of tick labels
+            plt.close()  # Close the plot to free up memory
+
+            print(f"Plot saved: {file_path}")
+
     def display_current_results(self, visuals, epoch, save_result):
         """Display or save current results.
 
@@ -55,6 +94,31 @@ class Visualizer:
         message = f"(Epoch: {epoch}, Batch: {counter}, MRI Volume: {mri_vol}, Slice: {slice_index}) "
         message += ", ".join([f"{k}: {v:.3f}" for k, v in losses.items()])
         message += f", Time/Batch: {time_per_batch:.3f}"
+        print(message)
+
+    def print_current_statistics(
+        self, epoch, batch_index, mri_vol_index, losses, time_taken, total_epochs
+    ):
+        """Print current training statistics on the console.
+
+        Args:
+            epoch (int): Current epoch number.
+            batch_index (int): Batch index relative to the start of the epoch.
+            mri_vol_index (int): MRI volume index.
+            losses (dict): A dictionary containing 'sr', 'gdn', and 'gan' losses.
+            epoch_start_time (float): Timestamp when the epoch started.
+            total_epochs (int): Total number of epochs, including both training and decay epochs.
+        """
+        sr_loss = losses.get("sr", 0)
+        gdn_loss = losses.get("gdn", 0)
+        gan_loss = losses.get("gan", 0)
+
+        message = (
+            f"Epoch {epoch}/{total_epochs} | Batch Index: {batch_index} | "
+            f"MRI Volume Index: {mri_vol_index} | SR Loss: {sr_loss:.3f} | "
+            f"GDN Loss: {gdn_loss:.3f} | GAN Loss: {gan_loss:.3f} | "
+            f"Time Taken: {time_taken} sec"
+        )
         print(message)
 
     def tensor2im(self, image_tensor, imtype=np.uint8):

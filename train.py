@@ -54,10 +54,11 @@ def main():
 
     # Training loop
     total_iters = 0
-    mri_vol_index = 0
+    losses_dict_arr = {"SR Loss": [], "GDN Loss": [], "GAN Loss": []}
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):
         epoch_start_time = time.time()
         epoch_iter = 0
+        mri_vol_index = 0
 
         for i, data in enumerate(train_loader, 0):
             epoch_iter += 1
@@ -108,20 +109,20 @@ def main():
                     #     )
 
                 # Save the latest model at the specified frequency
-                if total_iters % opt.save_latest_freq == 0:
-                    print(
-                        "Saving the latest model (epoch %d, total_iters %d)"
-                        % (epoch, total_iters)
-                    )
-                    # save_checkpoint(
-                    #     model, opt.checkpoint_dir, "latest", epoch, total_iters
-                    # )
-                    model.save_checkpoint(
-                        opt.checkpoint_dir_vol,
-                        ["sr epoch_%d" % epoch, "vgg_patchgan epoch_%d" % epoch],
-                        epoch,
-                        total_iters,
-                    )
+                # if total_iters % opt.save_latest_freq == 0:
+                #     print(
+                #         "Saving the latest model (epoch %d, total_iters %d)"
+                #         % (epoch, total_iters)
+                #     )
+                #     # save_checkpoint(
+                #     #     model, opt.checkpoint_dir, "latest", epoch, total_iters
+                #     # )
+                #     model.save_checkpoint(
+                #         opt.checkpoint_dir_vol,
+                #         ["sr epoch_%d" % epoch, "vgg_patchgan epoch_%d" % epoch],
+                #         epoch,
+                #         total_iters,
+                #     )
 
                 # Display visuals at the specified frequency of the slices of a certain MRI Volume
                 # if total_iters % opt.display_freq == 0:
@@ -135,29 +136,65 @@ def main():
                     model.get_total_loss_of_volume()["loss_gan"] / num_slices
                 )
 
-                print(
-                    "Epoch {}/{} | MRI Volume Index: {} | SR Loss: {:.3f} | GDN Loss: {:.3f} | GAN Loss: {:.3f} | Time Taken: {} sec".format(
-                        epoch,
-                        opt.n_epochs + opt.n_epochs_decay,
-                        mri_vol_index,
-                        total_loss_sr,
-                        total_loss_gdn,
-                        total_loss_gan,
-                        int(time.time() - epoch_start_time),
-                    )
+                losses_dict_arr["SR Loss"].append(total_loss_sr)
+                losses_dict_arr["GDN Loss"].append(total_loss_gdn)
+                losses_dict_arr["GAN Loss"].append(total_loss_gan)
+
+                # Determine the number of unique values in each loss array
+                unique_counts = {k: len(set(v)) for k, v in losses_dict_arr.items()}
+                max_unique_count = max(unique_counts.values())
+
+                # Calculate total_iters based on the max number of unique values and batch size
+                total_iters_for_plots = list(
+                    range(0, max_unique_count * opt.batch_size, opt.batch_size)
                 )
 
-        # Save the model at the end of every epoch
-        print("Saving the model at the end of epoch %d" % (epoch))
-        # save_checkpoint(
-        #     model, opt.checkpoint_dir, "epoch_%d" % epoch, epoch, total_iters
-        # )
-        model.save_checkpoint(
-            opt.checkpoint_dir_epoch,
-            ["sr epoch_%d" % epoch, "vgg_patchgan epoch_%d" % epoch],
-            epoch,
-            total_iters,
-        )
+                visualizer.plot_and_save_losses(
+                    output_path=opt.plots_out_dir,
+                    total_iters=total_iters_for_plots,
+                    losses_dict_arr=losses_dict_arr,
+                )
+
+                # print(
+                #     "Epoch {}/{} | Batch Index: {} | MRI Volume Index: {} | SR Loss: {:.3f} | GDN Loss: {:.3f} | GAN Loss: {:.3f} | Time Taken: {} sec".format(
+                #         epoch,
+                #         opt.n_epochs + opt.n_epochs_decay,
+                #         epoch_iter,
+                #         mri_vol_index,
+                #         total_loss_sr,
+                #         total_loss_gdn,
+                #         total_loss_gan,
+                #         int(time.time() - epoch_start_time),
+                #     )
+                # )
+
+                losses = {
+                    "sr": total_loss_sr,
+                    "gdn": total_loss_gdn,
+                    "gan": total_loss_gan,
+                }
+
+                visualizer.print_current_statistics(
+                    epoch=epoch,
+                    batch_index=epoch_iter,
+                    mri_vol_index=mri_vol_index,
+                    losses=losses,
+                    time_taken=int(time.time() - epoch_start_time),
+                    total_epochs=opt.n_epochs + opt.n_epochs_decay,
+                )
+
+        # Save the latest model at the specified frequency
+        if epoch % opt.save_epoch_freq == 0:
+            print("Saving the latest model at (epoch %d)" % (epoch))
+            # save_checkpoint(
+            #     model, opt.checkpoint_dir, "latest", epoch, total_iters
+            # )
+            model.save_checkpoint(
+                opt.checkpoint_dir_vol,
+                ["sr epoch_%d" % epoch, "vgg_patchgan epoch_%d" % epoch],
+                epoch,
+                total_iters,
+            )
 
     model.save_final_models()
 
