@@ -140,21 +140,6 @@ def main():
                 losses_dict_arr["GDN Loss"].append(total_loss_gdn)
                 losses_dict_arr["GAN Loss"].append(total_loss_gan)
 
-                # Determine the number of unique values in each loss array
-                unique_counts = {k: len(set(v)) for k, v in losses_dict_arr.items()}
-                max_unique_count = max(unique_counts.values())
-
-                # Calculate total_iters based on the max number of unique values and batch size
-                total_iters_for_plots = list(
-                    range(0, max_unique_count * opt.batch_size, opt.batch_size)
-                )
-
-                visualizer.plot_and_save_losses(
-                    output_path=opt.plots_out_dir,
-                    total_iters=total_iters_for_plots,
-                    losses_dict_arr=losses_dict_arr,
-                )
-
                 # print(
                 #     "Epoch {}/{} | Batch Index: {} | MRI Volume Index: {} | SR Loss: {:.3f} | GDN Loss: {:.3f} | GAN Loss: {:.3f} | Time Taken: {} sec".format(
                 #         epoch,
@@ -195,6 +180,21 @@ def main():
                 epoch,
                 total_iters,
             )
+
+    # Determine the number of unique values in each loss array
+    unique_counts = {k: len(set(v)) for k, v in losses_dict_arr.items()}
+    max_unique_count = max(unique_counts.values())
+
+    # Calculate total_iters based on the max number of unique values and batch size
+    total_iters_for_plots = list(
+        range(0, max_unique_count * opt.batch_size, opt.batch_size)
+    )
+
+    visualizer.plot_and_save_losses(
+        output_path=opt.plots_out_dir,
+        total_iters=total_iters_for_plots,
+        losses_dict_arr=losses_dict_arr,
+    )
 
     model.save_final_models()
 
