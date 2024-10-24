@@ -16,8 +16,8 @@ class MRIDataset(Dataset):
         print("High-Res directory files:", os.listdir(high_res_dir))
 
         # Collect files with the ".nii.gz" extension
-        self.low_res_files = sorted(glob.glob(os.path.join(low_res_dir, "*.nii.gz")))
-        self.high_res_files = sorted(glob.glob(os.path.join(high_res_dir, "*.nii.gz")))
+        self.low_res_files = sorted(glob.glob(os.path.join(low_res_dir, "*.nii")))
+        self.high_res_files = sorted(glob.glob(os.path.join(high_res_dir, "*.nii")))
 
         # Ensure we have pairs of files
         if len(self.low_res_files) != len(self.high_res_files):
