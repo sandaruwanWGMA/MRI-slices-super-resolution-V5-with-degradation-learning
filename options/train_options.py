@@ -140,7 +140,7 @@ class TrainOptions:
         )
         self.parser.add_argument(
             "--freeze_encoder",
-            action="store_true",
+            action=True,
             help="Freeze encoder layers of the SRUNet model",
         )
         self.parser.add_argument(
@@ -154,37 +154,6 @@ class TrainOptions:
             type=int,
             default=["blocks.3", "blocks.4", "blocks.5", "blocks.6"],
             help="Unfreezed layers for SRUNet",
-        )
-        # Parameters for loss functions
-        self.parser.add_argument(
-            "--alpha",
-            type=float,
-            default=1.0,
-            help="Weight for perceptual quality loss",
-        )
-        self.parser.add_argument(
-            "--beta",
-            type=float,
-            default=1.0,
-            help="Weight for feature matching loss in perceptual loss",
-        )
-        self.parser.add_argument(
-            "--gamma",
-            type=float,
-            default=1.0,
-            help="Weight for style loss component in perceptual loss",
-        )
-        self.parser.add_argument(
-            "--delta",
-            type=float,
-            default=1.0,
-            help="Weight for adversarial loss in perceptual_adversarial_loss",
-        )
-        self.parser.add_argument(
-            "--lambda_tv",
-            type=float,
-            default=1.0,
-            help="Weight for total variation loss in GDNLoss",
         )
         # Options specific to CustomDeepLab model
         self.parser.add_argument(
@@ -206,10 +175,34 @@ class TrainOptions:
 
         # Model specific hyperparameters
         self.parser.add_argument(
+            "--alpha_l1",
+            type=float,
+            default=1.0,
+            help="Weight for perceptual quality loss l1",
+        )
+        self.parser.add_argument(
+            "--beta_ssim",
+            type=float,
+            default=1.0,
+            help="Weight for feature matching loss in perceptual loss ssim",
+        )
+        self.parser.add_argument(
+            "--gamma_psnr",
+            type=float,
+            default=1.0,
+            help="Weight for style loss component in perceptual loss psnr",
+        )
+        self.parser.add_argument(
+            "--delta",
+            type=float,
+            default=1.0,
+            help="Weight for adversarial loss in perceptual_adversarial_loss",
+        )
+        self.parser.add_argument(
             "--lambda_tv",
             type=float,
-            default=0.5,
-            help="Weight for the total variation loss component",
+            default=1.0,
+            help="Weight for total variation loss in GDNLoss",
         )
         self.parser.add_argument(
             "--alpha_blur",

@@ -130,6 +130,9 @@ class SuperResolutionModel:
         weight_sr,
         weight_disc,
         weight_gdn,
+        alpha_l1,
+        beta_ssim,
+        gamma_psnr,
     ):
         # Normalize images before feeding to the networks
 
@@ -221,7 +224,13 @@ class SuperResolutionModel:
         fake_pred = self.vgg_patch_gan(sr_output)
 
         # Calculate losses
-        loss_sr = perceptual_quality_loss(sr_output, hr_images_normalized)
+        loss_sr = perceptual_quality_loss(
+            sr_output,
+            hr_images_normalized,
+            alpha=alpha_l1,
+            beta=beta_ssim,
+            gamma=gamma_psnr,
+        )
         loss_gan = discriminator_loss(real_preds=real_pred, fake_preds=fake_pred)
         loss_gdn = GDNLoss(sr_output, lr_images, blur_kernel, lambda_tv, alpha_blur)
 

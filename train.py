@@ -93,6 +93,9 @@ def main():
                         weight_sr=opt.weight_sr,
                         weight_disc=opt.weight_disc,
                         weight_gdn=opt.weight_gdn,
+                        alpha_l1=opt.alpha_l1,
+                        beta_ssim=opt.beta_ssim,
+                        gamma_psnr=opt.gamma_psnr,
                     )
 
                     # Print loss information at the specified frequency
