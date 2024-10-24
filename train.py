@@ -25,7 +25,7 @@ def main():
     model = create_model(opt)
 
     # Base directory
-    base_dir = "mri_coupled_dataset"
+    base_dir = "/kaggle/input/high-res-and-low-res-mri/Refined-MRI-dataset"
 
     # Initialize the datasets
     train_dataset = MRIDataset(base_dir=base_dir, transform=None)
