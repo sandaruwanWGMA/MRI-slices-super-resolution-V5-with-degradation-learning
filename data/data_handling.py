@@ -10,9 +10,7 @@ def split_dataset(dataset, train_size=0.7, val_size=0.2, test_size=0.1, random_s
         np.arange(len(dataset)), test_size=test_size, random_state=random_seed
     )
 
-    val_relative_proportion = (
-        val_size / train_val_size
-    )  
+    val_relative_proportion = val_size / train_val_size
     train_indices, val_indices = train_test_split(
         train_val_indices, test_size=val_relative_proportion, random_state=random_seed
     )

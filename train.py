@@ -24,13 +24,14 @@ def main():
     # Create a model based on the options
     model = create_model(opt)
 
-    # Creating dataset instances
-    train_dataset = MRIDataset("./dataset/train_filenames.txt")
-    val_dataset = MRIDataset("./dataset/val_filenames.txt")
+    # Base directory
+    base_dir = "mri_coupled_dataset"
 
-    # Creating data loaders
-    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=5, shuffle=False)
+    # Initialize the datasets
+    train_dataset = MRIDataset(base_dir=base_dir, transform=None)
+
+    # Create the data loaders
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
     # dataset = create_dataset(opt)
     # dataloader = DataLoader(
