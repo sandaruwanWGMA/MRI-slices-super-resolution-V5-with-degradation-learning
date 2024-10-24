@@ -140,7 +140,7 @@ class TrainOptions:
         )
         self.parser.add_argument(
             "--freeze_encoder",
-            action=True,
+            action="store_true",
             help="Freeze encoder layers of the SRUNet model",
         )
         self.parser.add_argument(
@@ -164,12 +164,12 @@ class TrainOptions:
         )
         self.parser.add_argument(
             "--freeze_backbone",
-            default=True,
+            default="store_true",
             help="Freeze the backbone of the CustomDeepLab model",
         )
         self.parser.add_argument(
             "--freeze_classifier",
-            default=False,
+            default="store_false",
             help="Freeze the classifier of the CustomDeepLab model",
         )
 
