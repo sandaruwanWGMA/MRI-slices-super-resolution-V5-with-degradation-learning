@@ -120,7 +120,16 @@ class SuperResolutionModel:
         return self.lr_slices[index], self.hr_slices[index]
 
     def optimize_parameters(
-        self, lr_images, hr_images, lambda_tv, alpha_blur, angle, translation
+        self,
+        lr_images,
+        hr_images,
+        lambda_tv,
+        alpha_blur,
+        angle,
+        translation,
+        weight_sr,
+        weight_disc,
+        weight_gdn,
     ):
         # Normalize images before feeding to the networks
 
@@ -217,7 +226,9 @@ class SuperResolutionModel:
         loss_gdn = GDNLoss(sr_output, lr_images, blur_kernel, lambda_tv, alpha_blur)
 
         # Total loss
-        total_loss = loss_sr + loss_gan + loss_gdn
+        total_loss = (
+            weight_sr * loss_sr + weight_disc * loss_gan + weight_gdn * loss_gdn
+        )
 
         # Backward pass
         total_loss.backward()

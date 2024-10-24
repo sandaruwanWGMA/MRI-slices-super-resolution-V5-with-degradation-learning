@@ -88,6 +88,9 @@ def main():
                         alpha_blur=0.75,
                         angle=angle,
                         translation=translation,
+                        weight_sr=0.85,
+                        weight_disc=0.75,
+                        weight_gdn=0.0001,
                     )
 
                     # Print loss information at the specified frequency
