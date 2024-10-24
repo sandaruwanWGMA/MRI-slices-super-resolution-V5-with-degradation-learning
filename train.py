@@ -24,7 +24,7 @@ def main():
     model = create_model(opt)
 
     # Base directory
-    base_dir = "/kaggle/input/high-res-and-low-res-mri/Refined-MRI-dataset/"
+    base_dir = "mri_coupled_dataset"
 
     # Initialize the datasets
     train_dataset = MRIDataset(base_dir=base_dir, transform=None)
@@ -54,6 +54,7 @@ def main():
 
     # Training loop
     total_iters = 0
+    mri_vol_index = 0
     for epoch in range(opt.epoch_count, opt.n_epochs + opt.n_epochs_decay + 1):
         epoch_start_time = time.time()
         epoch_iter = 0
@@ -61,6 +62,7 @@ def main():
         for i, data in enumerate(train_loader, 0):
             epoch_iter += 1
             for j in range(data[0].size(0)):
+                mri_vol_index += 1
                 low_res_image, high_res_image = data[0][j], data[1][j]
 
                 if high_res_image.shape[2:] != low_res_image.shape[2:]:
@@ -98,12 +100,12 @@ def main():
                     )
 
                     # Print loss information at the specified frequency
-                    if total_iters % opt.print_freq == 0:
-                        losses = model.get_current_losses()
-                        t_comp = (time.time() - epoch_start_time) / epoch_iter
-                        visualizer.print_current_losses(
-                            epoch, epoch_iter, losses, t_comp, slice_index + 1, j + 1
-                        )
+                    # if total_iters % opt.print_freq == 0:
+                    #     losses = model.get_current_losses()
+                    #     t_comp = (time.time() - epoch_start_time) / epoch_iter
+                    #     visualizer.print_current_losses(
+                    #         epoch, epoch_iter, losses, t_comp, slice_index + 1, j + 1
+                    #     )
 
                 # Save the latest model at the specified frequency
                 if total_iters % opt.save_latest_freq == 0:
@@ -134,14 +136,14 @@ def main():
                 )
 
                 print(
-                    "Epoch %d / %d \t Total SR Loss For Previous MRI Volume: %.3f \t Total GDN Loss For Previous MRI Volume: %.3f \t Total GAN Loss For Previous MRI Volume: %.3f \t Time Taken: %d sec"
-                    % (
+                    "Epoch {}/{} | MRI Volume Index: {} | SR Loss: {:.3f} | GDN Loss: {:.3f} | GAN Loss: {:.3f} | Time Taken: {} sec".format(
                         epoch,
                         opt.n_epochs + opt.n_epochs_decay,
+                        mri_vol_index,
                         total_loss_sr,
                         total_loss_gdn,
                         total_loss_gan,
-                        time.time() - epoch_start_time,
+                        int(time.time() - epoch_start_time),
                     )
                 )
 
