@@ -13,13 +13,13 @@ from utils.checkpointing import save_checkpoint, load_checkpoint
 
 from data.dataloader import MRIDataset
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
 def main():
     # Parse options
     opt = TrainOptions().parse()
-    opt.device = str(torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+    # Set device
+    opt.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Loading checkpoint on device: {opt.device}")
 
     # Create a model based on the options
     model = create_model(opt)
@@ -50,8 +50,8 @@ def main():
 
     # Optionally resume training
     if opt.continue_train:
-        load_checkpoint(model, opt.checkpoint_dir, opt.which_epoch, str(device))
-        print(f"Loading checkpoint on device: {device}")
+        load_checkpoint(model, opt.checkpoint_dir, opt.which_epoch, str(opt.device))
+        print(f"Loading checkpoint on device: {opt.device}")
 
     # Training loop
     total_iters = 0

@@ -260,6 +260,7 @@ class TrainOptions:
         if len(opt.gpu_ids) > 0 and torch.cuda.is_available():
             opt.device = torch.device(f"cuda:{opt.gpu_ids[0]}")
             torch.cuda.set_device(opt.device)  # Set the first GPU as the default
+
         else:
             opt.device = torch.device("cpu")
 
