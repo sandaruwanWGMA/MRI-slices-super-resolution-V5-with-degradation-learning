@@ -17,8 +17,7 @@ from data.dataloader import MRIDataset
 def main():
     # Parse options
     opt = TrainOptions().parse()
-    # Set device
-    opt.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     print(f"Loading checkpoint on device: {opt.device}")
 
     # Create a model based on the options
