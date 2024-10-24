@@ -35,7 +35,7 @@ class MRIDataset(Dataset):
         low_res_data = nib.load(low_res_path).get_fdata()
         high_res_data = nib.load(high_res_path).get_fdata()
 
-        # Ensure dimensions are compatible: add a channel dimension [1, 150, 256, 256] and [1, 150, 256, 256]
+        # Ensure dimensions are compatible: add a channel dimension
         low_res_data = torch.tensor(low_res_data, dtype=torch.float32).unsqueeze(0)
         high_res_data = torch.tensor(high_res_data, dtype=torch.float32).unsqueeze(0)
 
