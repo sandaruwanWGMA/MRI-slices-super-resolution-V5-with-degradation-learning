@@ -11,13 +11,9 @@ class MRIDataset(Dataset):
         low_res_dir = os.path.join(base_dir, "Low-Res")
         high_res_dir = os.path.join(base_dir, "High-Res")
 
-        # Print files in subdirectories for verification
-        print("Low-Res directory files:", os.listdir(low_res_dir))
-        print("High-Res directory files:", os.listdir(high_res_dir))
-
         # Collect files with the ".nii.gz" extension
-        self.low_res_files = sorted(glob.glob(os.path.join(low_res_dir, "*.nii")))
-        self.high_res_files = sorted(glob.glob(os.path.join(high_res_dir, "*.nii")))
+        self.low_res_files = sorted(glob.glob(os.path.join(low_res_dir, "*.nii.gz")))
+        self.high_res_files = sorted(glob.glob(os.path.join(high_res_dir, "*.nii.gz")))
 
         # Ensure we have pairs of files
         if len(self.low_res_files) != len(self.high_res_files):

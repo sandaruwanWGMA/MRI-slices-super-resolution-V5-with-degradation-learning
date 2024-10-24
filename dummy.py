@@ -1,29 +1,48 @@
+# train.py
+
+import os
+import time
 import torch
-from model.RRDB_architecture import RRDBNet
+from torch.utils.data import DataLoader
+from model.create_model import create_model
+
+# from data import create_dataset
+from options.train_options import TrainOptions
+from utils.visualizer import Visualizer
+from utils.checkpointing import save_checkpoint, load_checkpoint
+
+from data.dataloader import MRIDataset
 
 
-# Load the model architecture as currently defined
-model = RRDBNet(
-    in_nc=1, out_nc=1, nf=64, nb=23, gc=32
-)  # Adjusted for grayscale input/output
+def main():
+    # Parse options
+    opt = TrainOptions().parse()
 
-# Load the pre-trained weights
-pretrained_weights = torch.load("RRDB_ESRGAN_x4.pth", map_location=torch.device("cpu"))
+    print(f"Loading checkpoint on device: {opt.device}")
 
-# Manually adjust the weights for the first and last convolutional layers
-pretrained_weights["conv_first.weight"] = pretrained_weights["conv_first.weight"][
-    :, 0:1, :, :
-].clone()
-pretrained_weights["conv_last.weight"] = pretrained_weights["conv_last.weight"][
-    0:1, :, :, :
-].clone()
-pretrained_weights["conv_last.bias"] = pretrained_weights["conv_last.bias"][0:1].clone()
+    # Create a model based on the options
+    model = create_model(opt)
 
-# Try to load the adjusted weights into your model
-try:
-    model.load_state_dict(pretrained_weights)
-    print("Weights loaded successfully.")
-except RuntimeError as e:
-    print("Failed to load weights:", e)
+    # Base directory
+    base_dir = "mri_coupled_dataset"
 
-# Proceed with the rest of your model setup or evaluation
+    # Initialize the datasets
+    train_dataset = MRIDataset(base_dir=base_dir, transform=None)
+
+    # Create the data loaders
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=opt.batch_size,
+        shuffle=True,
+        num_workers=opt.num_workers,
+    )
+
+    print("We are good !!")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error during training: {e}")
+        # Optionally add code to handle specific exceptions and perform cleanup
