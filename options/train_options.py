@@ -267,18 +267,17 @@ class TrainOptions:
         self.print_options(opt)
         return opt
 
-
-def print_options(self, opt):
-    message = "----------------- Options ---------------\n"
-    for k, v in sorted(vars(opt).items()):
-        default = self.parser.get_default(k)
-        if isinstance(v, list):
-            v = ", ".join(
-                map(str, v)
-            )  # Join list items into a single string for display
-        elif isinstance(v, torch.device):
-            v = str(v)
-        comment = f"\t[default: {default}]" if v != default else ""
-        message += f"{k:>25}: {v:<30}{comment}\n"
-    message += "----------------- End -------------------"
-    print(message)
+    def print_options(self, opt):
+        message = "----------------- Options ---------------\n"
+        for k, v in sorted(vars(opt).items()):
+            default = self.parser.get_default(k)
+            if isinstance(v, list):
+                v = ", ".join(
+                    map(str, v)
+                )  # Join list items into a single string for display
+            elif isinstance(v, torch.device):
+                v = str(v)
+            comment = f"\t[default: {default}]" if v != default else ""
+            message += f"{k:>25}: {v:<30}{comment}\n"
+        message += "----------------- End -------------------"
+        print(message)
