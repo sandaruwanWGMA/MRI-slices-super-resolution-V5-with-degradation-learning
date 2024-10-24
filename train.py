@@ -27,7 +27,9 @@ def main():
     base_dir = "/kaggle/input/high-res-and-low-res-mri/Refined-MRI-dataset/"
 
     # Initialize the datasets
-    train_dataset = MRIDataset(base_dir=base_dir, transform=None)
+    train_dataset = MRIDataset(
+        "/kaggle/input/high-res-and-low-res-mri/Refined-MRI-dataset", transform=None
+    )
 
     # Create the data loaders
     train_loader = DataLoader(
