@@ -24,7 +24,7 @@ class TrainOptions:
         self.parser.add_argument(
             "--num_workers",
             type=int,
-            default=8,
+            default=2,
             help="Number of subprocesses to use for data loading",
         )
         self.parser.add_argument(
@@ -34,7 +34,7 @@ class TrainOptions:
             help="Type of model to train: e.g., 'sr_unet', 'multi_gdn', 'vgg_patch_gan'",
         )
         self.parser.add_argument(
-            "--batch_size", type=int, default=32, help="Batch size for training"
+            "--batch_size", type=int, default=16, help="Batch size for training"
         )
         self.parser.add_argument(
             "--epoch_count",
