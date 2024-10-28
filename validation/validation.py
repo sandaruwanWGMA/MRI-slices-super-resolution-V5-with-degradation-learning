@@ -1,69 +1,86 @@
+import torch
+from torch.utils.data import DataLoader
+from model.SRUNet import SRUNet
+from data.dataloader import MRIDataset
+from options.train_options import TrainOptions
+from skimage import feature, metrics
+import lpips
 import numpy as np
-import matplotlib.pyplot as plt
-import sys
-import os
 
-from SRUNet import SRUNet
+# Initialize the model and DataLoader
+opt = TrainOptions().parse()
+val_data = "dataset/val_filenames.txt"
+val_dataset = MRIDataset(val_data)
+val_loader = DataLoader(
+    val_dataset, batch_size=1, shuffle=False
+)  # Batch size is 1 for simplicity
 
-image_size = 256
-model = SRUNet(
-    image_size=image_size, in_channels=1, out_channels=1, freeze_encoder=True
-)
+# Check for CUDA
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
-# Input image
-# x = torch.randn(1, 1, image_size, image_size)  # Example input with batch size 1, grayscale
-
-# print(x)
-
-# Load the model weights from the .pth file
+# Model setup
+model = SRUNet(image_size=256, in_channels=1, out_channels=1, freeze_encoder=True)
 model.load_state_dict(
-    torch.load("model/final_models-SRUNet_final.pth", map_location=torch.device("cpu"))
+    torch.load("model/final_models-SRUNet_final.pth", map_location=device)
 )
-
+model.to(device)
 model.eval()
 
-# Move the input tensor to the same device as the model
-array = np.array([[input_data[0]]], dtype=np.float32)
-y = torch.from_numpy(array)
-input_tensor = y
+# Initialize Perceptual Loss
+perceptual_loss = lpips.LPIPS(net="vgg").to(device)
 
-# Pass the input through the model in evaluation mode
-with torch.no_grad():
-    output = model(input_tensor)
+# Initialize metrics
+total_psnr = 0
+total_ssim = 0
+total_edge_accuracy = 0
+total_perceptual_loss = 0
+num_samples = 0
 
-print(output.shape)  # Should print torch.Size([1, 1, 256, 256])
+
+def edge_accuracy(pred, target):
+    # Edge detection must be run on CPU using skimage
+    edges_pred = feature.canny(pred)
+    edges_true = feature.canny(target)
+    return np.mean(edges_pred == edges_true)
 
 
-for i in range(1, 150):
-    # Move the input tensor to the same device as the model
-    array = np.array([[input_data[i]]], dtype=np.float32)
-    y = torch.from_numpy(array)
-    input_tensor = y
+# Iterate over the dataset
+for i, data in enumerate(val_loader, 0):
+    low_res_image, high_res_image = data[0].to(device), data[1].to(device)
 
-    # Pass the input through the model in evaluation mode
     with torch.no_grad():
-        output1 = model(input_tensor)
+        output = model(low_res_image)
 
-    output = torch.cat((output, output1), dim=1)
+    # Convert tensors to numpy for skimage (run on CPU)
+    output_np = output.squeeze().cpu().numpy()
+    high_res_np = high_res_image.squeeze().cpu().numpy()
 
-print(output.shape)
+    # Calculate PSNR and SSIM
+    psnr = metrics.peak_signal_noise_ratio(
+        high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
+    )
+    ssim = metrics.structural_similarity(
+        high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
+    )
+    edge_acc = edge_accuracy(output_np, high_res_np)
 
+    # Calculate Perceptual Loss
+    p_loss = perceptual_loss(output, high_res_image).mean().item()
 
-# # Convert the output2 tensor to a NumPy array for visualization
-# output2_image = output2.squeeze().cpu().numpy()
+    total_psnr += psnr
+    total_ssim += ssim
+    total_edge_accuracy += edge_acc
+    total_perceptual_loss += p_loss
+    num_samples += 1
 
-# # Plot the output2 image
-# plt.imshow(output2_image, cmap='gray')
-# plt.colorbar()  # Optional: adds a colorbar to show pixel values
-# plt.title('SRUNet Output2')
-# plt.show()
+# Calculate averages
+average_psnr = total_psnr / num_samples
+average_ssim = total_ssim / num_samples
+average_edge_accuracy = total_edge_accuracy / num_samples
+average_perceptual_loss = total_perceptual_loss / num_samples
 
-# Assuming `output` is the tensor with shape [1, 150, 256, 256]
-output_np = output.squeeze().cpu().numpy()
-print(output_np.shape)  # Should print (150, 256, 256)
-
-
-input_header = input.header
-
-output_img = nib.Nifti1Image(output_np, input.affine, input_header)
-nib.save(output_img, "output_image2.nii")
+print(f"Average PSNR: {average_psnr}")
+print(f"Average SSIM: {average_ssim}")
+print(f"Average Edge Accuracy: {average_edge_accuracy}")
+print(f"Average Perceptual Loss: {average_perceptual_loss}")
