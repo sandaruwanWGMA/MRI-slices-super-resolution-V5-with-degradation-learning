@@ -8,6 +8,8 @@ import numpy as np
 import sys
 import os
 
+val_data = "dataset/val_filenames.txt"
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from data.dataloader import MRIDataset
@@ -16,7 +18,6 @@ from model.SRUNet import SRUNet
 
 # Initialize the model and DataLoader
 opt = TrainOptions().parse()
-val_data = "dataset/val_filenames.txt"
 val_dataset = MRIDataset(val_data)
 val_loader = DataLoader(
     val_dataset, batch_size=1, shuffle=False
