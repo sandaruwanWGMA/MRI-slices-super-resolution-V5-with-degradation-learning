@@ -66,9 +66,7 @@ for i, data in enumerate(val_loader, 0):
 
             # Convert tensors to numpy for skimage (run on CPU)
             output_np = output.cpu().numpy()
-            high_res_np = high_res_image.cpu().numpy()
-            print("output_np shape:", output_np.shape)
-            print("high_res_np shape:", high_res_np.shape)
+            high_res_np = hr_slice.cpu().numpy()
 
             # Calculate PSNR and SSIM
             psnr = metrics.peak_signal_noise_ratio(
@@ -84,8 +82,8 @@ for i, data in enumerate(val_loader, 0):
 
             total_psnr += psnr
             total_ssim += ssim
-            # total_edge_accuracy += edge_acc
-            # total_perceptual_loss += p_loss
+            total_edge_accuracy += edge_acc
+            total_perceptual_loss += p_loss
             num_samples += 1
 
 # Calculate averages
