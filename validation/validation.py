@@ -86,7 +86,16 @@ for i, data in enumerate(val_loader, 0):
             edge_acc = edge_accuracy(output_np, high_res_np)
 
             # Calculate Perceptual Loss
-            p_loss = perceptual_loss(output, high_res_image).mean().item()
+            # Expand single-channel tensors to 3 channels by duplicating along the channel dimension
+            output_rgb = output.expand(3, -1, -1).unsqueeze(
+                0
+            )  # shape becomes (1, 3, 256, 256)
+            high_res_rgb = (
+                high_res_image[:, slice_index, :, :].expand(3, -1, -1).unsqueeze(0)
+            )  # shape becomes (1, 3, 256, 256)
+
+            # Calculate Perceptual Loss
+            p_loss = perceptual_loss(output_rgb, high_res_rgb).mean().item()
 
             total_psnr += psnr
             total_ssim += ssim
