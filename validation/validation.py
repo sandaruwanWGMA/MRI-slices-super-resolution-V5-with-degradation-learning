@@ -8,6 +8,8 @@ import numpy as np
 import sys
 import os
 
+from skimage.metrics import structural_similarity
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from data.dataloader import MRIDataset
@@ -68,12 +70,18 @@ for i, data in enumerate(val_loader, 0):
             output_np = output.cpu().numpy()
             high_res_np = hr_slice.cpu().numpy()
 
+            high_res_np = high_res_np.squeeze()  # shape becomes (256, 256)
+            output_np = output_np.squeeze()  # shape becomes (256, 256)
+
             # Calculate PSNR and SSIM
             psnr = metrics.peak_signal_noise_ratio(
                 high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
             )
-            ssim = metrics.structural_similarity(
-                high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
+            ssim = structural_similarity(
+                high_res_np,
+                output_np,
+                data_range=high_res_np.max() - high_res_np.min(),
+                win_size=5,
             )
             edge_acc = edge_accuracy(output_np, high_res_np)
 
