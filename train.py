@@ -3,7 +3,7 @@
 import os
 import time
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from model.create_model import create_model
 
 # from data import create_dataset
@@ -29,9 +29,12 @@ def main():
     # Initialize the datasets
     train_dataset = MRIDataset(base_dir=base_dir, transform=None)
 
-    # Create the data loaders
+    # Create a subset of the dataset with only the first 100 samples
+    train_subset = Subset(train_dataset, range(100))
+
+    # Create the data loader for the subset
     train_loader = DataLoader(
-        train_dataset,
+        train_subset,
         batch_size=opt.batch_size,
         shuffle=True,
         num_workers=opt.num_workers,
