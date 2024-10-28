@@ -1,11 +1,15 @@
 import torch
 from torch.utils.data import DataLoader
-from ..model.SRUNet import SRUNet
 from data.dataloader import MRIDataset
 from options.train_options import TrainOptions
 from skimage import feature, metrics
 import lpips
 import numpy as np
+import os
+
+os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+from model.SRUNet import SRUNet
 
 # Initialize the model and DataLoader
 opt = TrainOptions().parse()
