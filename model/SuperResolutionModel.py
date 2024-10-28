@@ -217,7 +217,7 @@ class SuperResolutionModel:
 
         # Forward pass through SRUNet
         sr_output = self.sr_unet(lr_images_normalized)
-        blur_kernel = self.degradation_network(sr_output, angle, translation)
+        # blur_kernel = self.degradation_network(sr_output, angle, translation)
 
         # Forward pass through VGGStylePatchGAN
         real_pred = self.vgg_patch_gan(hr_images_normalized)
@@ -292,34 +292,24 @@ class SuperResolutionModel:
         save_folder = os.path.join("results", f"epoch_{epoch}")
         os.makedirs(save_folder, exist_ok=True)
 
-        print("sv 1")
-
         # Assemble LR and SR slices into 3D volumes
         lr_volume = np.stack(
             [lr_slice.squeeze().cpu().numpy() for lr_slice in self.lr_slices], axis=0
         )
 
-        print("sv 2")
-
         sr_volume = np.stack(
             [self.current_visuals["SR"].squeeze() for _ in range(len(self.lr_slices))],
             axis=0,
         )
-        print("sv 3")
 
         # Save LR and SR volumes as .nii files
         lr_img = nib.Nifti1Image(lr_volume, affine=np.eye(4))
         sr_img = nib.Nifti1Image(sr_volume, affine=np.eye(4))
 
-        print("sv 4")
-
         lr_file_path = os.path.join(save_folder, f"epoch{epoch}_LR.nii")
         sr_file_path = os.path.join(save_folder, f"epoch{epoch}_HR.nii")
 
-        print("sv 5")
-
         nib.save(lr_img, lr_file_path)
-        print("sv 6")
         nib.save(sr_img, sr_file_path)
 
         print(f"Saved LR volume to {lr_file_path}")
