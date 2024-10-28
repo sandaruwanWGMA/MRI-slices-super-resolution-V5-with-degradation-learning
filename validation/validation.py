@@ -22,8 +22,7 @@ model.load_state_dict(torch.load("validation/final_models-SRUNet_final.pth"))
 model.eval()
 
 # Move the input tensor to the same device as the model
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-input_tensor = x.to(device)
+input_tensor = x
 
 # Pass the input through the model in evaluation mode
 with torch.no_grad():
