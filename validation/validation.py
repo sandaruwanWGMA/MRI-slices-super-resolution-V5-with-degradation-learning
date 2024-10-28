@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from model.SRUNet import SRUNet
+from ..model.SRUNet import SRUNet
 from data.dataloader import MRIDataset
 from options.train_options import TrainOptions
 from skimage import feature, metrics
