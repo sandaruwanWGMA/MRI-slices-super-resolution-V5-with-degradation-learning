@@ -61,32 +61,32 @@ for i, data in enumerate(val_loader, 0):
                 high_res_image[:, slice_index, :, :],
             )
 
-            print(lr_slice.shape)
-            print(hr_slice.shape)
-            # with torch.no_grad():
-            #     output = model(lr_slice)
+            # print(lr_slice.shape)
+            # print(hr_slice.shape)
+            with torch.no_grad():
+                output = model(lr_slice)
 
-            # # Convert tensors to numpy for skimage (run on CPU)
-            # output_np = output.squeeze().cpu().numpy()
-            # high_res_np = high_res_image.squeeze().cpu().numpy()
+            # Convert tensors to numpy for skimage (run on CPU)
+            output_np = output.squeeze().cpu().numpy()
+            high_res_np = high_res_image.squeeze().cpu().numpy()
 
-            # # Calculate PSNR and SSIM
-            # psnr = metrics.peak_signal_noise_ratio(
-            #     high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
-            # )
-            # ssim = metrics.structural_similarity(
-            #     high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
-            # )
-            # edge_acc = edge_accuracy(output_np, high_res_np)
+            # Calculate PSNR and SSIM
+            psnr = metrics.peak_signal_noise_ratio(
+                high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
+            )
+            ssim = metrics.structural_similarity(
+                high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
+            )
+            edge_acc = edge_accuracy(output_np, high_res_np)
 
-            # # Calculate Perceptual Loss
-            # p_loss = perceptual_loss(output, high_res_image).mean().item()
+            # Calculate Perceptual Loss
+            p_loss = perceptual_loss(output, high_res_image).mean().item()
 
-            # total_psnr += psnr
-            # total_ssim += ssim
-            # # total_edge_accuracy += edge_acc
-            # # total_perceptual_loss += p_loss
-            # num_samples += 1
+            total_psnr += psnr
+            total_ssim += ssim
+            total_edge_accuracy += edge_acc
+            total_perceptual_loss += p_loss
+            num_samples += 1
 
 # Calculate averages
 average_psnr = total_psnr / num_samples
