@@ -16,7 +16,7 @@ from model.SRUNet import SRUNet
 
 # Initialize the model and DataLoader
 opt = TrainOptions().parse()
-val_data = "dataset/val_filenames.txt"
+val_data = "val_filenames.txt"
 val_dataset = MRIDataset(txt_file=val_data)
 val_loader = DataLoader(
     val_dataset, batch_size=1, shuffle=False
