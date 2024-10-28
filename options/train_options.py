@@ -45,13 +45,13 @@ class TrainOptions:
         self.parser.add_argument(
             "--n_epochs",
             type=int,
-            default=10,
+            default=1,
             help="Number of epochs at the initial learning rate",
         )
         self.parser.add_argument(
             "--n_epochs_decay",
             type=int,
-            default=10,
+            default=1,
             help="Number of epochs to linearly decay the learning rate to zero",
         )
         self.parser.add_argument(
@@ -110,13 +110,13 @@ class TrainOptions:
         self.parser.add_argument(
             "--save_latest_freq",
             type=int,
-            default=10,
+            default=1,
             help="Frequency of saving the latest results during training",
         )
         self.parser.add_argument(
             "--save_epoch_freq",
             type=int,
-            default=5,
+            default=1,
             help="Frequency of saving checkpoints at the end of specified number of epochs",
         )
         self.parser.add_argument(
