@@ -1,9 +1,14 @@
 import torch
 from torch.utils.data import DataLoader
 from skimage import feature, metrics
+
 import lpips
 import numpy as np
+
+import sys
 import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from data.dataloader import MRIDataset
 from options.train_options import TrainOptions
