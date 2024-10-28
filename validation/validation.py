@@ -52,32 +52,38 @@ def edge_accuracy(pred, target):
 
 # Iterate over the dataset
 for i, data in enumerate(val_loader, 0):
-    low_res_image, high_res_image = data[0].to(device), data[1].to(device)
+    for j in range(data[0].size(0)):
+        low_res_image, high_res_image = data[0][j].to(device), data[1][j].to(device)
+        num_slices = len(model.lr_slices)
+        for slice_index in range(num_slices):
+            lr_slice, hr_slice = (
+                low_res_image[:, slice_index, :, :],
+                high_res_image[:, slice_index, :, :],
+            )
+            with torch.no_grad():
+                output = model(lr_slice)
 
-    with torch.no_grad():
-        output = model(low_res_image)
+            # Convert tensors to numpy for skimage (run on CPU)
+            output_np = output.squeeze().cpu().numpy()
+            high_res_np = high_res_image.squeeze().cpu().numpy()
 
-    # Convert tensors to numpy for skimage (run on CPU)
-    output_np = output.squeeze().cpu().numpy()
-    high_res_np = high_res_image.squeeze().cpu().numpy()
+            # Calculate PSNR and SSIM
+            psnr = metrics.peak_signal_noise_ratio(
+                high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
+            )
+            ssim = metrics.structural_similarity(
+                high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
+            )
+            edge_acc = edge_accuracy(output_np, high_res_np)
 
-    # Calculate PSNR and SSIM
-    psnr = metrics.peak_signal_noise_ratio(
-        high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
-    )
-    ssim = metrics.structural_similarity(
-        high_res_np, output_np, data_range=high_res_np.max() - high_res_np.min()
-    )
-    edge_acc = edge_accuracy(output_np, high_res_np)
+            # Calculate Perceptual Loss
+            p_loss = perceptual_loss(output, high_res_image).mean().item()
 
-    # Calculate Perceptual Loss
-    p_loss = perceptual_loss(output, high_res_image).mean().item()
-
-    total_psnr += psnr
-    total_ssim += ssim
-    # total_edge_accuracy += edge_acc
-    # total_perceptual_loss += p_loss
-    num_samples += 1
+            total_psnr += psnr
+            total_ssim += ssim
+            # total_edge_accuracy += edge_acc
+            # total_perceptual_loss += p_loss
+            num_samples += 1
 
 # Calculate averages
 average_psnr = total_psnr / num_samples
