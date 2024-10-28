@@ -84,8 +84,8 @@ for i, data in enumerate(val_loader, 0):
 
             total_psnr += psnr
             total_ssim += ssim
-            total_edge_accuracy += edge_acc
-            total_perceptual_loss += p_loss
+            # total_edge_accuracy += edge_acc
+            # total_perceptual_loss += p_loss
             num_samples += 1
 
 # Calculate averages
