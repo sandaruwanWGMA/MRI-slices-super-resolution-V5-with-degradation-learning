@@ -72,17 +72,17 @@ class DegradationNetwork(nn.Module):
 
 
 # Example use
-img_size = 256
-input_image = torch.rand(
-    1,
-    1,
-    img_size,
-    img_size,
-    device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
-)
+# img_size = 256
+# input_image = torch.rand(
+#     1,
+#     1,
+#     img_size,
+#     img_size,
+#     device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+# )
 
-degradation_net = DegradationNetwork(image_size=img_size)
-angle = 30  # Rotation angle in degrees
-translation = (0.1, 0.1)  # Translation parameters
-degraded_image = degradation_net(input_image, angle, translation)
-print(f"Final degraded image shape: {degraded_image.shape}")
+# degradation_net = DegradationNetwork(image_size=img_size)
+# angle = 30  # Rotation angle in degrees
+# translation = (0.1, 0.1)  # Translation parameters
+# degraded_image = degradation_net(input_image, angle, translation)
+# print(f"Final degraded image shape: {degraded_image.shape}")

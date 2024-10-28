@@ -33,9 +33,9 @@ class SuperResolutionModel:
             self.device
         )  # Move SRUNet model to the correct device
 
-        self.degradation_network = DegradationNetwork(image_size=opt.image_size).to(
-            self.device
-        )
+        # self.degradation_network = DegradationNetwork(image_size=opt.image_size).to(
+        #     self.device
+        # )
         self.vgg_patch_gan = VGGStylePatchGAN(patch_size=opt.patch_size).to(self.device)
 
         # Optimizers for SRUNet and VGGStylePatchGAN only, since DegradationNetwork is not trained
@@ -232,12 +232,10 @@ class SuperResolutionModel:
             gamma=gamma_psnr,
         )
         loss_gan = discriminator_loss(real_preds=real_pred, fake_preds=fake_pred)
-        loss_gdn = GDNLoss(sr_output, lr_images, blur_kernel, lambda_tv, alpha_blur)
+        # loss_gdn = GDNLoss(sr_output, lr_images, blur_kernel, lambda_tv, alpha_blur)
 
         # Total loss
-        total_loss = (
-            weight_sr * loss_sr + weight_disc * loss_gan + weight_gdn * loss_gdn
-        )
+        total_loss = weight_sr * loss_sr + weight_disc * loss_gan
 
         # Backward pass
         total_loss.backward()
@@ -249,13 +247,12 @@ class SuperResolutionModel:
         # Output the losses in a dictionary
         loss_results = {
             "loss_sr": loss_sr.item(),
-            "loss_gdn": loss_gdn.item(),
             "loss_gan": loss_gan.item(),
         }
 
         self.loss_of_total_volume["loss_sr"] += loss_results["loss_sr"]
         self.loss_of_total_volume["loss_gan"] += loss_results["loss_gan"]
-        self.loss_of_total_volume["gdnLoss"] += loss_results["loss_gdn"]
+        # self.loss_of_total_volume["gdnLoss"] += loss_results["loss_gdn"]
 
         # Store the current losses
         self.current_losses = loss_results

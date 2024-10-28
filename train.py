@@ -129,15 +129,15 @@ def main():
                 # model.save_volume(epoch=epoch)
 
                 total_loss_sr = model.get_total_loss_of_volume()["loss_sr"] / num_slices
-                total_loss_gdn = (
-                    model.get_total_loss_of_volume()["gdnLoss"] / num_slices
-                )
+                # total_loss_gdn = (
+                #     model.get_total_loss_of_volume()["gdnLoss"] / num_slices
+                # )
                 total_loss_gan = (
                     model.get_total_loss_of_volume()["loss_gan"] / num_slices
                 )
 
                 losses_dict_arr["SR Loss"].append(total_loss_sr)
-                losses_dict_arr["GDN Loss"].append(total_loss_gdn)
+                # losses_dict_arr["GDN Loss"].append(total_loss_gdn)
                 losses_dict_arr["GAN Loss"].append(total_loss_gan)
 
                 # print(
@@ -155,7 +155,6 @@ def main():
 
                 losses = {
                     "sr": total_loss_sr,
-                    "gdn": total_loss_gdn,
                     "gan": total_loss_gan,
                 }
 
