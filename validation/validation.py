@@ -28,9 +28,7 @@ print(f"Using device: {device}")
 
 # Model setup
 model = SRUNet(image_size=256, in_channels=1, out_channels=1, freeze_encoder=True)
-model.load_state_dict(
-    torch.load("model/final_models-SRUNet_final.pth", map_location=device)
-)
+model.load_state_dict(torch.load("validation/SRUNet_final.pth", map_location=device))
 model.to(device)
 model.eval()
 
