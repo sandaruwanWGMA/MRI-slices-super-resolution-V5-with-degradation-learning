@@ -54,7 +54,7 @@ def edge_accuracy(pred, target):
 for i, data in enumerate(val_loader, 0):
     for j in range(data[0].size(0)):
         low_res_image, high_res_image = data[0][j].to(device), data[1][j].to(device)
-        num_slices = len(model.lr_slices)
+        num_slices = 150
         for slice_index in range(num_slices):
             lr_slice, hr_slice = (
                 low_res_image[:, slice_index, :, :],
