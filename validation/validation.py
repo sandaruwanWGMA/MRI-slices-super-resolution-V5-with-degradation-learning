@@ -5,7 +5,6 @@ import lpips
 import numpy as np
 import os
 
-os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from data.dataloader import MRIDataset
 from options.train_options import TrainOptions
 from model.SRUNet import SRUNet
