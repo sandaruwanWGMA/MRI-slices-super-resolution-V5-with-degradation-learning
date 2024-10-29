@@ -30,16 +30,12 @@ def main():
     train_data = "dataset/train_filenames.txt"
 
     # Initialize the datasets
-    train_dataset = MRIDataset(base_dir=train_data)
-
-    # Select a random subset of 20 items
-    subset_indices = np.random.choice(len(train_dataset), 20, replace=False)
-    train_subset = Subset(train_dataset, subset_indices)
+    train_dataset = MRIDataset(txt_file=train_data, limit=20)
 
     # Create the data loaders for the subset
     train_loader = DataLoader(
-        train_subset,
-        batch_size=opt.batch_size,  # Ensure this is reasonable given the smaller size of the subset
+        train_dataset,
+        batch_size=opt.batch_size,
         shuffle=True,
         num_workers=opt.num_workers,
     )
