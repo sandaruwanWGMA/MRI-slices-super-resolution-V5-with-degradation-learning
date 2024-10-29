@@ -34,7 +34,7 @@ class TrainOptions:
             help="Type of model to train: e.g., 'sr_unet', 'multi_gdn', 'vgg_patch_gan'",
         )
         self.parser.add_argument(
-            "--batch_size", type=int, default=16, help="Batch size for training"
+            "--batch_size", type=int, default=8, help="Batch size for training"
         )
         self.parser.add_argument(
             "--epoch_count",
@@ -45,13 +45,13 @@ class TrainOptions:
         self.parser.add_argument(
             "--n_epochs",
             type=int,
-            default=10,
+            default=1,
             help="Number of epochs at the initial learning rate",
         )
         self.parser.add_argument(
             "--n_epochs_decay",
             type=int,
-            default=10,
+            default=1,
             help="Number of epochs to linearly decay the learning rate to zero",
         )
         self.parser.add_argument(
