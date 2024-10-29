@@ -24,16 +24,21 @@ def main():
     # Create a model based on the options
     model = create_model(opt)
 
-    # base_dir = "mri_coupled_dataset"
+    # Base directory
+    base_dir = "../mir-coupled-dataset"
 
-    train_data = "dataset/train_filenames.txt"
+    # train_data = "dataset/train_filenames.txt"
 
     # Initialize the datasets
-    train_dataset = MRIDataset(txt_file=train_data, limit=20)
+    train_dataset = MRIDataset(base_dir=base_dir)
+
+    # Select a random subset of 20 items
+    subset_indices = np.random.choice(len(train_dataset), 20, replace=False)
+    train_subset = Subset(train_dataset, subset_indices)
 
     # Create the data loaders for the subset
     train_loader = DataLoader(
-        train_dataset,
+        train_subset,
         batch_size=opt.batch_size,
         shuffle=True,
         num_workers=opt.num_workers,

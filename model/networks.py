@@ -48,7 +48,6 @@ class SingleChannelVGG(nn.Module):
         original_vgg_features = vgg19.features
 
         # Modify the first convolutional layer
-        # New layer with 1 input channel, but the same output channels and kernel size
         first_conv_layer = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
 
         # Copy the weights from the first three channels of the pretrained model
@@ -64,6 +63,10 @@ class SingleChannelVGG(nn.Module):
 
         # Assign modified features to the class variable
         self.vgg_layers = modified_features
+
+        for i in range(10):  # Freezing the first 5 layers, for example
+            for param in self.vgg_layers[i].parameters():
+                param.requires_grad = False
 
     def forward(self, x):
         x = self.vgg_layers(x)

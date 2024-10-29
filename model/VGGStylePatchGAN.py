@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
-from .networks import SingleChannelVGG, DoubleChannelVGG, CustomMiniPatchGAN
+from networks import SingleChannelVGG, DoubleChannelVGG, CustomMiniPatchGAN
 
 
 class VGGStylePatchGAN(nn.Module):
@@ -29,20 +29,20 @@ class VGGStylePatchGAN(nn.Module):
 
 
 # Example usage:
-discriminator = VGGStylePatchGAN(patch_size=70)
+# discriminator = VGGStylePatchGAN(patch_size=70)
 # input_image = torch.randn(1, 1, 256, 256)
 # output = discriminator(input_image)
 # print(output)  # Should reflect patch-based output
 
 
-def count_params(model):
-    trainable_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    non_trainable_count = sum(
-        p.numel() for p in model.parameters() if not p.requires_grad
-    )
-    return trainable_count, non_trainable_count
+# def count_params(model):
+#     trainable_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
+#     non_trainable_count = sum(
+#         p.numel() for p in model.parameters() if not p.requires_grad
+#     )
+#     return trainable_count, non_trainable_count
 
 
-trainable_params, non_trainable_params = count_params(discriminator)
-print("Trainable params:", trainable_params)
-print("Non-trainable params:", non_trainable_params)
+# trainable_params, non_trainable_params = count_params(discriminator)
+# print("Trainable params:", trainable_params)
+# print("Non-trainable params:", non_trainable_params)
