@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import segmentation_models_pytorch as smp
-from .networks import GeneratorFrequencyFilter
 
 
 class SRUNet(nn.Module):
@@ -14,9 +13,6 @@ class SRUNet(nn.Module):
         unfreeze_layers=None,
     ):
         super(SRUNet, self).__init__()
-
-        # Initialize frequency filter
-        self.frequency_filter = GeneratorFrequencyFilter(image_size)
 
         # Initialize UNet with EfficientNet-b3 encoder
         self.unet = smp.Unet(
@@ -44,8 +40,7 @@ class SRUNet(nn.Module):
         self.tanh = nn.Tanh()
 
     def forward(self, x):
-        x_filtered = self.frequency_filter(x)
-        x_unet = self.unet(x_filtered)
+        x_unet = self.unet(x)
         return self.tanh(x_unet)
 
 
@@ -55,11 +50,13 @@ class SRUNet(nn.Module):
 #     image_size=image_size, in_channels=1, out_channels=1, freeze_encoder=True
 # )
 
-# # Input image
+# Input image
 # x = torch.randn(
 #     1, 1, image_size, image_size
 # )  # Example input with batch size 1, grayscale
 
-# # Forward pass
+# Forward pass
 # output = model(x)
 # print(output)
+
+# print(model)

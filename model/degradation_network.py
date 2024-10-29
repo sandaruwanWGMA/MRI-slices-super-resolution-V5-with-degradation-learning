@@ -55,20 +55,18 @@ class DegradationNetwork(nn.Module):
             [
                 [cos_a, -sin_a, 0, tx],
                 [sin_a, cos_a, 0, ty],
-                [0, 0, 1, 0],  # Extend to 3x4 matrix
+                [0, 0, 1, 0],
             ],
             device=self.device,
         )
 
-        # Create affine grid and apply the affine transformation using torch.nn.functional
+        # Create affine grid and apply the affine transformation
         grid = F.affine_grid(
             affine_matrix.unsqueeze(0), image.size(), align_corners=False
-        )  # Note the unsqueeze to add batch dimension
+        )
         transformed_image = F.grid_sample(image, grid, align_corners=False)
 
-        return transformed_image.squeeze(
-            0
-        )  # Remove batch dimension after transformation
+        return transformed_image.squeeze(0)
 
 
 # Example use
