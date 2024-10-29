@@ -30,7 +30,7 @@ def main():
     train_data = "dataset/train_filenames.txt"
 
     # Initialize the datasets
-    train_dataset = MRIDataset(base_dir=train_data)
+    train_dataset = MRIDataset(txt_file=train_data)
 
     # Select a random subset of 20 items
     subset_indices = np.random.choice(len(train_dataset), 20, replace=False)
