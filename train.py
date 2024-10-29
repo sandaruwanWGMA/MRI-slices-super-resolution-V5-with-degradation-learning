@@ -24,7 +24,6 @@ def main():
     # Create a model based on the options
     model = create_model(opt)
 
-    # Base directory
     # base_dir = "mri_coupled_dataset"
 
     train_data = "dataset/train_filenames.txt"
