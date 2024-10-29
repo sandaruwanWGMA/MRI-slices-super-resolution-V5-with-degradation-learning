@@ -48,7 +48,8 @@ import os
 
 
 class MRIDataset(Dataset):
-    def __init__(self, txt_file, transform=None, limit=None):
+
+    def __init__(self, base_dir, transform=None, limit=None):
         """
         Args:
             txt_file (string): Path to the text file with pairs of MRI file paths.
@@ -57,7 +58,7 @@ class MRIDataset(Dataset):
         """
         self.transform = transform
         self.limit = limit
-        self.mri_pairs = self._read_txt_file(txt_file)
+        self.mri_pairs = self._read_txt_file(base_dir)
 
     def _read_txt_file(self, txt_file):
         """Reads a text file and returns a list of tuples (high_res_path, low_res_path)."""
