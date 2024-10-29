@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
-from networks import SingleChannelVGG, DoubleChannelVGG, CustomMiniPatchGAN
+from .networks import SingleChannelVGG, DoubleChannelVGG, CustomMiniPatchGAN
 
 
 class VGGStylePatchGAN(nn.Module):
