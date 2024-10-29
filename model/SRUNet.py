@@ -45,7 +45,7 @@ class SRUNet(nn.Module):
 
 
 # Define image size and instantiate model
-# image_size = 256
+image_size = 256
 # model = SRUNet(
 #     image_size=image_size, in_channels=1, out_channels=1, freeze_encoder=True
 # )
@@ -58,3 +58,16 @@ class SRUNet(nn.Module):
 # # Forward pass
 # output = model(x)
 # print(output)
+
+
+# def count_params(model):
+#     trainable_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
+#     non_trainable_count = sum(
+#         p.numel() for p in model.parameters() if not p.requires_grad
+#     )
+#     return trainable_count, non_trainable_count
+
+
+# trainable_params, non_trainable_params = count_params(model)
+# print("Trainable params:", trainable_params)
+# print("Non-trainable params:", non_trainable_params)
