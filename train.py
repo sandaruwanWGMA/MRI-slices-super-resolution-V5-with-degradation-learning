@@ -25,7 +25,7 @@ def main():
     model = create_model(opt)
 
     # Base directory
-    base_dir = "../mir-coupled-dataset"
+    base_dir = "../mri_coupled_dataset"
 
     # train_data = "dataset/train_filenames.txt"
 
